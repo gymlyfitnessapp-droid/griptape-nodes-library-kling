@@ -91,6 +91,32 @@ Generates a video from a reference image and optional text prompts.
 **Multiple video generation:**  
 Set `num_videos` to generate multiple videos in parallel. The first completed video is exposed in `video_url`, while all completed videos are returned in `video_urls` in completion order. When `num_videos` is `1`, `video_urls` contains a single item matching `video_url`.
 
+### Kling V3 Multi-Shot (`KlingV3MultiShot`)
+
+Generates multi-shot video sequences using Kling v3's `multi_prompt` API. Each shot in the sequence has its own prompt and duration, allowing fine-grained control over the narrative structure of the generated video. An optional start frame and end frame image can guide the visual style.
+
+The shot list is edited through a custom interactive widget (MultiShotEditor) embedded directly in the node. Each shot entry has a name, duration (in seconds), and a text description that serves as the prompt for that segment. The total duration across all shots must be between 3 and 15 seconds, and at least one shot must have a description.
+
+| Parameter          | Type                                 | Description                                                                                     | Default Value |
+|--------------------|--------------------------------------|-------------------------------------------------------------------------------------------------|---------------|
+| `start_frame`      | `ImageArtifact` / `ImageUrlArtifact` | Starting frame image for the video sequence (required).                                         |               |
+| `end_frame`        | `ImageArtifact` / `ImageUrlArtifact` | Ending frame image (optional).                                                                  | `None`        |
+| `shots`            | `list`                               | List of shots, each with `name`, `duration`, and `description`. Edited via the MultiShotEditor widget. | 1 shot, 3s    |
+| `cfg_scale`        | `float`                              | Flexibility (0-1). Higher value = lower flexibility, stronger prompt relevance.                 | `0.5`         |
+| `mode`             | `str`                                | Video generation mode (`std`: Standard, `pro`: Professional).                                   | `std`         |
+| `aspect_ratio`     | `str`                                | Aspect ratio of the generated video. Choices: `16:9`, `9:16`, `1:1`.                           | `16:9`        |
+| `negative_prompt`  | `str`                                | Negative text prompt — elements to avoid (max 2500 chars).                                     | `""`          |
+| `sound`            | `str`                                | Generate native audio with the video. Choices: `on`, `off`.                                    | `off`         |
+| `polling_delay`    | `int`                                | Delay in seconds between polling the Kling API for job completion (hidden, 5-30s).             | `10`          |
+| `video_url`        | `VideoUrlArtifact`                   | **Output:** URL of the generated multi-shot video.                                             | `None`        |
+
+*Note: `Image Inputs` and `Generation Settings` parameters are grouped and may be collapsed by default in the UI.*
+
+**Shot list constraints:**
+- Total duration across all shots must be between 3 and 15 seconds.
+- At least one shot must have a non-empty description.
+- The node automatically selects the `image2video` or `text2video` API endpoint depending on whether a start frame image is provided.
+
 ### Kling AI Video Extension (`KlingAI_VideoExtension`)
 
 Extends an existing Kling AI video.
