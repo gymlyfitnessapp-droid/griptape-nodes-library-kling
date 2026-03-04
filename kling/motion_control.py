@@ -284,10 +284,9 @@ class KlingAI_MotionControl(SuccessFailureNode):
         is_relative_static = url_string.startswith("/static/")
         if is_local_http or is_relative_static:
             try:
-                response = requests.get(url_string, timeout=10)
-                response.raise_for_status()
-                return base64.b64encode(response.content).decode("utf-8")
-            except requests.exceptions.RequestException as exc:
+                image_data = File(url_string).read_bytes()
+                return base64.b64encode(image_data).decode("utf-8")
+            except FileLoadError as exc:
                 logger.warning("Failed to load local image URL %s: %s", url_string, exc)
                 return url_string
 

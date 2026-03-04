@@ -321,10 +321,9 @@ class KlingAI_ImageToVideo(ControlNode):
             if is_local_http and url_string.startswith("http"):
                 try:
                     logger.info(f"_get_image_api_data: Converting local URL {url_string} to Base64.")
-                    response = requests.get(url_string, timeout=10)  # Fetch content from local URL
-                    response.raise_for_status()
-                    return base64.b64encode(response.content).decode("utf-8")  # Return Base64
-                except requests.exceptions.RequestException as e:
+                    image_data = File(url_string).read_bytes()
+                    return base64.b64encode(image_data).decode("utf-8")  # Return Base64
+                except FileLoadError as e:
                     logger.error(
                         f"_get_image_api_data: Failed to fetch local URL {url_string} for Base64 conversion: {e}"
                     )
