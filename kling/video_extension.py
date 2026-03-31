@@ -222,8 +222,8 @@ class KlingAI_VideoExtension(ControlNode):
                         # Download the generated video and save to project storage
                         video_bytes = File(video_url).read_bytes()
 
-                        saved = self._output_file.build_file()
-                        saved.write_bytes(video_bytes)
+                        dest = self._output_file.build_file()
+                        saved = dest.write_bytes(video_bytes)
 
                         # Create artifact and publish outputs
                         video_artifact = VideoUrlArtifact(url=saved.location, name=saved.location)

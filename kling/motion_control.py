@@ -431,8 +431,8 @@ class KlingAI_MotionControl(SuccessFailureNode):
             return
 
         try:
-            saved = self._output_file.build_file()
-            saved.write_bytes(video_bytes)
+            dest = self._output_file.build_file()
+            saved = dest.write_bytes(video_bytes)
         except (OSError, PermissionError) as exc:
             logger.warning("%s failed to save to project storage: %s", self.name, exc)
             self.parameter_output_values["video_url"] = VideoUrlArtifact(download_url)

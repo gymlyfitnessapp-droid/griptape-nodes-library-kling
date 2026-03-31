@@ -371,8 +371,8 @@ class KlingV3MultiShot(ControlNode):
         except requests.exceptions.RequestException as e:
             raise RuntimeError(f"Failed to download generated video: {e}") from e
 
-        saved = self._output_file.build_file()
-        saved.write_bytes(video_bytes)
+        dest = self._output_file.build_file()
+        saved = dest.write_bytes(video_bytes)
 
         video_artifact = VideoUrlArtifact(saved.location)
         logger.info(f"Saved multi-shot video to project storage. URL: {saved.location}")
