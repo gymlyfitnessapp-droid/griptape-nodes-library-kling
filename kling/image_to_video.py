@@ -9,6 +9,7 @@ from griptape.artifacts import ImageArtifact, ImageUrlArtifact, VideoUrlArtifact
 from griptape_nodes.exe_types.core_types import Parameter, ParameterGroup, ParameterMode
 from griptape_nodes.exe_types.node_types import AsyncResult, ControlNode
 from griptape_nodes.exe_types.param_components.project_file_parameter import ProjectFileParameter
+from griptape_nodes.exe_types.param_types.parameter_image import ParameterImage
 from griptape_nodes.files.file import File, FileLoadError
 from griptape_nodes.retained_mode.griptape_nodes import GriptapeNodes, logger
 from griptape_nodes.traits.options import Options
@@ -69,20 +70,16 @@ class KlingAI_ImageToVideo(ControlNode):
 
         # Image Inputs Group
         with ParameterGroup(name="Image Inputs") as image_group:
-            Parameter(
+            ParameterImage(
                 name="image",
-                input_types=["ImageArtifact", "ImageUrlArtifact", "str"],
-                type="ImageArtifact",
                 tooltip="Reference Image (start frame) - required. Input ImageArtifact, ImageUrlArtifact, direct URL string, or Base64 string.",
-                allowed_modes={ParameterMode.INPUT},
+                allow_output=False,
                 ui_options={"display_name": "Start Frame"},
             )
-            Parameter(
+            ParameterImage(
                 name="image_tail",
-                input_types=["ImageArtifact", "ImageUrlArtifact", "str"],
-                type="ImageArtifact",
                 tooltip="Tail/End Frame image (optional). Supported on kling-v2-1 with pro mode (5s/10s). Accepts ImageArtifact, ImageUrlArtifact, URL, or Base64.",
-                allowed_modes={ParameterMode.INPUT},
+                allow_output=False,
                 ui_options={"display_name": "Tail Frame"},
             )
         self.add_node_element(image_group)
@@ -190,13 +187,10 @@ class KlingAI_ImageToVideo(ControlNode):
 
         # Masks Group
         with ParameterGroup(name="Masks") as masks_group:
-            Parameter(
+            ParameterImage(
                 name="static_mask",
-                input_types=["ImageArtifact", "ImageUrlArtifact", "str"],
-                type="ImageArtifact",
-                default_value=None,
                 tooltip="Static Brush Application Area. Input ImageArtifact, ImageUrlArtifact, direct URL, or Base64 string.",
-                allowed_modes={ParameterMode.INPUT, ParameterMode.PROPERTY},
+                allow_output=False,
             )
             Parameter(
                 name="dynamic_masks",
@@ -608,8 +602,8 @@ class KlingAI_ImageToVideo(ControlNode):
             # Download the generated video and save to project storage
             video_bytes = File(video_url).read_bytes()
 
-            saved = self._output_file.build_file()
-            saved.write_bytes(video_bytes)
+            dest = self._output_file.build_file()
+            saved = dest.write_bytes(video_bytes)
 
             # Create VideoUrlArtifact from the saved URL
             video_artifact = VideoUrlArtifact(saved.location)
